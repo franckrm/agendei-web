@@ -9,3 +9,11 @@ body{
 .mt-page{
     margin-top:90px;
 }
+
+select{
+    border: 0px;
+    background-color: #fff;
+    cursor: pointer;
+    /* min-width: 200px; */
+    width: 100%;
+}
