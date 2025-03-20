@@ -5,6 +5,15 @@ import {doctors, appointments} from "../../constants/data";
 import Appointment from "../../components/navbar/appointment/appointment";
 
 function Appointments(){
+
+    function ClickEdit(id_appointment){
+        console.log("Editar "+id_appointment)
+    }
+
+    function ClickDelete(id_appointment){
+        console.log("Excluir "+ id_appointment)
+    }
+
     return <div className="container-fluid mt-page">
         <Navbar/>
         
@@ -57,7 +66,17 @@ function Appointments(){
                 <tbody> 
                     {
                         appointments.map((ap)=>{
-                            return <Appointment  />
+                            return <Appointment key={ap.id_appointment} 
+                                id_appointment = {ap.id_appointment}
+                                user ={ap.user}
+                                doctor = {ap.doctor}
+                                service={ap.service}
+                                booking_date={ap.booking_date}
+                                booking_hour = {ap.booking_hour}
+                                price={ap.price}
+                                clickEdit={ClickEdit}
+                                clickDelete={ClickDelete}
+                                />
                         })
                     }
                 </tbody>
