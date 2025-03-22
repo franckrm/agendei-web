@@ -1,13 +1,15 @@
 
+import "./appointments.css"
 import Navbar from "../../components/navbar/navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {doctors, appointments} from "../../constants/data";
 import Appointment from "../../components/navbar/appointment/appointment";
 
 function Appointments(){
 
+    const navigate = useNavigate();
     function ClickEdit(id_appointment){
-        console.log("Editar "+id_appointment)
+        navigate("/appointments/edit/"+id_appointment)
     }
 
     function ClickDelete(id_appointment){
@@ -35,13 +37,9 @@ function Appointments(){
                     <select name="doctor" id="doctor">
                         <option value="">Todos os médicos</option>
 
-                        {
-                            doctors.map((doc)=>{
-                                return <option value={doc.id_doctor}>
-                                    {doc.name}
-                                </option>
-                            })
-                        }
+                        {doctors.map((doc)=>{
+                                return <option key={doc.id_doctor} value={doc.id_doctor}>{doc.name}</option>
+                        })}
                          
                     </select>
                 </div>
