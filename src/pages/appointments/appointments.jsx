@@ -2,12 +2,16 @@
 import "./appointments.css"
 import Navbar from "../../components/navbar/navbar";
 import { Link, useNavigate } from "react-router-dom";
-import {doctors, appointments} from "../../constants/data";
+import {doctors} from "../../constants/data";
 import Appointment from "../../components/navbar/appointment/appointment";
+import { useEffect, useState } from "react";
+import api from "../../constants/api";
 
 function Appointments(){
 
     const navigate = useNavigate();
+    const [appointments, setAppointments] = useState([]);
+
     function ClickEdit(id_appointment){
         navigate("/appointments/edit/"+id_appointment)
     }
@@ -15,6 +19,26 @@ function Appointments(){
     function ClickDelete(id_appointment){
         console.log("Excluir "+ id_appointment)
     }
+
+    async function LoadAppointments(){
+        try{
+            const response = await api.get("/appointments");
+            if(response.data){
+                setAppointments(response.data);
+            }
+
+        }catch (error){
+            if(error.response?.data.error)
+                alert(error.response?.data.error) ;
+            else
+                alert("Error ao efeturar login. Tenete novamente mais tarde");
+
+        }
+    } 
+
+    useEffect(()=>{
+        LoadAppointments();
+    },[]);
 
     return <div className="container-fluid mt-page">
         <Navbar/>

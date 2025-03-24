@@ -26,6 +26,7 @@ function Login(){
                 localStorage.setItem("sessionId", response.data.id_user);
                 localStorage.setItem("sessionEmail", response.data.email );
                 localStorage.setItem("sessionName", response.data.name);
+                api.defaults.headers.common['Authorization'] = "Bearer " + response.data.token;
                 navigate("/appointments");
             }else
                 setMsg("Error ao efeturar login. Tenete novamente mais tarde");
@@ -37,7 +38,7 @@ function Login(){
             else
                 setMsg("Error ao efeturar login. Tenete novamente mais tarde");
 
-            console.log(error)
+            
         }
 
     
