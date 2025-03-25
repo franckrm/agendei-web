@@ -22,8 +22,13 @@ function Appointments(){
 
     async function LoadAppointments(){
         try{
-            const response = await api.get("/appointments");
+            const response = await api.get("/admin/appointments", {
+                params:{
+                    id_doctor:3
+                }
+            });
             if(response.data){
+                console.log(response.data)
                 setAppointments(response.data);
             }
 
@@ -68,7 +73,7 @@ function Appointments(){
                     </select>
                 </div>
 
-                <button className="btn btn-primary">Filtrar</button>
+                <button onClick={(LoadAppointments)} className="btn btn-primary" type="button">Filtrar</button>
             </div>
         
         </div>
