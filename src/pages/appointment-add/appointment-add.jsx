@@ -1,10 +1,74 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
-import { doctors, doctors_services } from "../../constants/data.js";
+import { doctors_services } from "../../constants/data.js";
+import { useEffect, useState } from "react";
+import api from "../../constants/api.js";
 
 function AppointmentAdd(){
 
+    const navigate = useNavigate();
     const {id_appointment} = useParams();
+    const [users, setUsers] = useState([]);
+    const [doctors, setDoctors] = useState([]);
+
+    const [idUser, setIdUser] = useState("");
+    const [idDoctor, setIdDoctor] = useState("");
+    const [idService, setIdService] = useState("");
+    const [bookingDate, setBookingDate] = useState("");
+    const [bookingHour, setBookingHour] = useState("");
+
+    async function LoadUsers(){
+        try{
+            const response = await api.get("/admin/users");
+            if(response.data){
+                setUsers(response.data);
+            }
+
+        }catch (error){
+            if(error.response?.data.error)
+                if(error.response.status == 401){
+                    if(error.response.status == 401)
+                        return navigate("/")
+                    
+                    alert(error.response?.data.error) ;
+    
+                }
+            else
+                alert("Error ao listar pacientes");
+
+        }
+    }
+
+    async function LoadDoctors(){
+        try{
+            const response = await api.get("/doctors");
+            if(response.data){
+                setDoctors(response.data);
+            }
+
+        }catch (error){
+            if(error.response?.data.error)
+                if(error.response.status == 401){
+                    if(error.response.status == 401)
+                        return navigate("/")
+                    
+                    alert(error.response?.data.error) ;
+    
+                }
+            else
+                alert("Error ao listar médicos");
+
+        }
+    } 
+
+
+    async function SaveAppointment(){
+        console.log(idUser, idDoctor, idService,  bookingDate, bookingHour)
+    }
+
+    useEffect(()=>{
+        LoadUsers();
+    }, [])
 
     return <>
         <Navbar/>
@@ -17,11 +81,26 @@ function AppointmentAdd(){
                         }
                     </h2>
                 </div>
+                <div className="col-12 mt-4">
+                    <label htmlFor="user" className="form-label">Paciente</label>
+                    <div className="form-control mb-2">
+                        <select name="user" id="user"
+                        value={idUser} onChange={(e) => setIdUser(e.target.value)} >
+                            <option value="0">Selecione o paciente</option>
 
+                            {users.map((u)=>{
+                                return <option key={u.id_user} value={u.id_user}>{u.name}</option>
+                            })}
+
+                        </select>
+                    </div>
+                                             
+                </div>
                 <div className="col-12 mt-4">
                     <label htmlFor="doctor" className="form-label">Médico</label>
                     <div className="form-control mb-2">
-                        <select name="doctor" id="doctor">
+                        <select name="doctor" id="doctor"
+                        value={idDoctor} onChange={(e) => setIdDoctor(e.target.value)}>
                             <option value="0">Selecione o médico</option>
 
                             {doctors.map((doc)=>{
@@ -36,7 +115,8 @@ function AppointmentAdd(){
                 <div className="col-12 mt-3">
                     <label htmlFor="service" className="form-label">Serviço</label>
                     <div className="form-control mb-2">
-                        <select name="service" id="service">
+                        <select name="service" id="service"
+                        value={idService} onChange={(e) => setIdService(e.target.value)}>
                             <option value="0">Selecione o serviço</option>
 
                             {doctors_services.map((d)=>{
@@ -51,30 +131,33 @@ function AppointmentAdd(){
 
                 <div className="col-6 mt-3">
                     <label htmlFor="bookingDate" className="form-label">Data</label>
-                    <input type="date" className="form-control"  name="bookingDate" id="bookingDate" />                   
+                    <input type="date" className="form-control"  name="bookingDate" id="bookingDate"
+                    value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} />                   
                 </div>
                 <div className="col-6 mt-3">
                     <label htmlFor="bookingDate" className="form-label">Horário</label>
                     <div className="form-control mb-2">
-                        <select name="bookingHours" id="bookingHours">
+                        <select name="bookingHours" id="bookingHours"
+                         value={bookingHour} onChange={(e) => setBookingHour(e.target.value)}>
                             <option value="0">Horário</option>
-                            <option value="0">09:00</option>
-                            <option value="0">09:30</option>
-                            <option value="0">10:00</option>
-                            <option value="0">10:30</option>
-                            <option value="0">11:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="09:30">09:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
                         </select>
-                    </div> 
-
-                    <div className="col-12 mt-4">
-                        <div className="d-flex justify-content-end">
-                            <Link to="/appointments" className="btn btn-outline-primary me-3">
-                                Cancelar
-                            </Link>
-                            <button className="btn btn-primary">Salvar Dados</button>
-                        </div>
-                    </div>               
+                    </div>             
                 </div>
+                <div className="col-12 mt-4">
+                    <div className="d-flex justify-content-end">
+                        <Link to="/appointments" className="btn btn-outline-primary me-3">
+                            Cancelar
+                        </Link>
+                        <button  onClick={SaveAppointment} className="btn btn-primary" type="button">
+                            Salvar Dados
+                        </button>
+                    </div>
+                </div>   
             </div>
         </div>
     </>
