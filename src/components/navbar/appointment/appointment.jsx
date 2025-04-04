@@ -9,7 +9,7 @@ function Appointment(props){
         <td>{props.service}</td>
         <td>{
             new Intl.DateTimeFormat('pt-BR', {dateStyle:'short'}).format(dt)
-        }</td>
+        } - {props.booking_hour}h</td>
         <td className="text-end">{
             new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(props.price)
             }</td>

@@ -1,6 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
-import { doctors_services } from "../../constants/data.js";
 import { useEffect, useState } from "react";
 import api from "../../constants/api.js";
 
@@ -10,6 +9,7 @@ function AppointmentAdd(){
     const {id_appointment} = useParams();
     const [users, setUsers] = useState([]);
     const [doctors, setDoctors] = useState([]);
+    const [services, setServices] = useState([]);
 
     const [idUser, setIdUser] = useState("");
     const [idDoctor, setIdDoctor] = useState("");
@@ -43,7 +43,10 @@ function AppointmentAdd(){
         try{
             const response = await api.get("/doctors");
             if(response.data){
-                setDoctors(response.data);
+                setDoctors(response.data); 
+
+                if(id_appointment > 0)
+                    LoadAppointment(id_appointment);
             }
 
         }catch (error){
@@ -62,13 +65,103 @@ function AppointmentAdd(){
     } 
 
 
+    async function LoadAppointment(id){
+        
+        try{
+            const response = await api.get("/admin/appointments/"+id);
+            if(response.data){
+                setIdUser(response.data.id_user);
+                setIdDoctor(response.data.id_doctor);
+                setIdService(response.data.id_service);
+                setBookingDate(response.data.booking_date);
+                setBookingHour(response.data.booking_hour);
+               
+            }
+
+        }catch (error){
+            if(error.response?.data.error)
+                if(error.response.status == 401){
+                    if(error.response.status == 401)
+                        return navigate("/")
+                    
+                    alert(error.response?.data.error) ;
+    
+                }
+            else
+                alert("Error ao listar serviços");
+
+        }
+    } 
+
+    async function LoadServices(id){
+        if(!id)
+            return;
+
+        try{
+            const response = await api.get("/doctors/"+id+"/services");
+            if(response.data){
+                setServices(response.data);
+            }
+
+        }catch (error){
+            if(error.response?.data.error)
+                if(error.response.status == 401){
+                    if(error.response.status == 401)
+                        return navigate("/")
+                    
+                    alert(error.response?.data.error) ;
+    
+                }
+            else
+                alert("Error ao listar serviços");
+
+        }
+    } 
+
+
     async function SaveAppointment(){
-        console.log(idUser, idDoctor, idService,  bookingDate, bookingHour)
+
+        const json = {
+            id_user: idUser,
+            id_doctor: idDoctor,
+            id_service: idService,
+            booking_date: bookingDate,
+            booking_hour: bookingHour
+        };
+
+        try {
+            const response = id_appointment > 0 ? 
+            await api.put("/admin/appointments/"+id_appointment, json) :
+            await api.post("/admin/appointments/", json);
+
+            if(response.data){
+                navigate("/appointments")
+            }
+
+        } catch (error) {
+            if(error.response?.data.error)
+                if(error.response.status == 401){
+                    if(error.response.status == 401)
+                        return navigate("/")
+                    
+                    alert(error.response?.data.error) ;
+    
+                }
+            else
+                alert("Erro ao salvar dados");
+            
+        }
+       
     }
 
     useEffect(()=>{
         LoadUsers();
-    }, [])
+        LoadDoctors();
+    }, []);
+
+    useEffect(()=>{
+        LoadServices(idDoctor);
+    }, [idDoctor]);
 
     return <>
         <Navbar/>
@@ -119,9 +212,9 @@ function AppointmentAdd(){
                         value={idService} onChange={(e) => setIdService(e.target.value)}>
                             <option value="0">Selecione o serviço</option>
 
-                            {doctors_services.map((d)=>{
-                                return <option key={d.id_service} 
-                                value={d.id_service}>{d.description}</option>
+                            {services.map((s)=>{
+                                return <option key={s.id_service} 
+                                value={s.id_service}>{s.description}</option>
                             })}
 
                         </select>
@@ -135,11 +228,13 @@ function AppointmentAdd(){
                     value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} />                   
                 </div>
                 <div className="col-6 mt-3">
-                    <label htmlFor="bookingDate" className="form-label">Horário</label>
+                    <label htmlFor="bookingHour" className="form-label">Horário</label>
                     <div className="form-control mb-2">
-                        <select name="bookingHours" id="bookingHours"
+                        <select name="bookingHour" id="bookingHour"
                          value={bookingHour} onChange={(e) => setBookingHour(e.target.value)}>
-                            <option value="0">Horário</option>
+                            <option value="00:00">Horário</option>
+                            <option value="08:00">08:00</option>
+                            <option value="08:30">08:30</option>
                             <option value="09:00">09:00</option>
                             <option value="09:30">09:30</option>
                             <option value="10:00">10:00</option>
